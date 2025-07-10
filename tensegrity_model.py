@@ -92,6 +92,23 @@ def run_isoforms():
         energy = calculate_energy(nucleons, bonds)
         print(f"{name} Energy: {energy:.2f}")
         visualize_isoform(nucleons, bonds, title=name)
+ 
+    results = []
+
+    for name, nucleons, bonds in isoforms:
+        energy = calculate_energy(nucleons, bonds)
+        print(f"{name} Energy: {energy:.2f}")
+        if plot:
+            visualize_isoform(nucleons, bonds, title=name)
+        results.append((name, energy))
+
+    if save_results:
+        os.makedirs("results", exist_ok=True)
+        with open("results/energies.csv", "w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(["Isoform", "Energy"])
+            writer.writerows(results)
+        print("✅ Results saved to results/energies.csv")
 
 if __name__ == "__main__":
     run_isoforms()
