@@ -1,15 +1,32 @@
-# nucleus_tensegrity/cli.py
+def run_isoforms(plot=True, save_results=False, isoform_name=None):
+    isoforms = []
 
-import argparse
-from .tensegrity_model import run_isoforms
+    # --- Define isoforms ---
+    nucleons_1 = { ... }  # Hex Prism
+    bonds_1 = [ ... ]
+    isoforms.append(("Hex Prism", nucleons_1, bonds_1))
 
-def main():
-    parser = argparse.ArgumentParser(description="Run Tensegrity Nucleus Isoform Simulations")
-    parser.add_argument("command", choices=["run"], help="Command to execute")
-    parser.add_argument("--no-plot", action="store_true", help="Disable 3D visualizations")
-    parser.add_argument("--save-results", action="store_true", help="Save results to results/energies.csv")
-    args = parser.parse_args()
+    nucleons_2 = { ... }  # Linear Chain
+    bonds_2 = [ ... ]
+    isoforms.append(("Linear Chain", nucleons_2, bonds_2))
 
-    if args.command == "run":
-        run_isoforms(plot=not args.no_plot, save_results=args.save_results)
+    results = []
+
+    for name, nucleons, bonds in isoforms:
+        if isoform_name and name.lower() != isoform_name.lower():
+            continue
+
+        energy = calculate_energy(nucleons, bonds)
+        print(f"{name} Energy: {energy:.2f}")
+        if plot:
+            visualize_isoform(nucleons, bonds, title=name)
+        results.append((name, energy))
+
+    if save_results:
+        os.makedirs("results", exist_ok=True)
+        with open("results/energies.csv", "w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(["Isoform", "Energy"])
+            writer.writerows(results)
+        print("✅ Results saved to results/energies.csv")
 
