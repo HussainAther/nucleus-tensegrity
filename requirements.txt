@@ -1,4 +1,6 @@
 numpy
 matplotlib
 networkx
+fuzzywuzzy
+python-Levenshtein  # (optional but speeds up fuzzywuzzy)
 
