@@ -3,6 +3,7 @@
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
+from fuzzywuzzy import process
 from mpl_toolkits.mplot3d import Axes3D
 
 # Energy constants (arbitrary units)
@@ -109,6 +110,45 @@ def run_isoforms():
             writer.writerow(["Isoform", "Energy"])
             writer.writerows(results)
         print("✅ Results saved to results/energies.csv")
+
+from fuzzywuzzy import process
+
+def run_isoforms(plot=True, save_results=False, isoform_name=None):
+    isoforms = []
+
+    # --- Define isoforms ---
+    isoforms.append(("Hex Prism", {...}, [...]))
+    isoforms.append(("Linear Chain", {...}, [...]))
+    isoforms.append(("Trigonal Dipyramid", {...}, [...]))  # Example third
+
+    all_names = [name for name, _, _ in isoforms]
+
+    # Fuzzy match if isoform_name is given
+    if isoform_name:
+        match, score = process.extractOne(isoform_name, all_names)
+        if score < 60:
+            print(f"❌ No close match found for isoform '{isoform_name}'.")
+            print("👉 Available isoforms:", ", ".join(all_names))
+            return
+        print(f"🔍 Interpreting isoform '{isoform_name}' as '{match}' (score={score})")
+        isoforms = [item for item in isoforms if item[0] == match]
+
+    results = []
+    for name, nucleons, bonds in isoforms:
+        energy = calculate_energy(nucleons, bonds)
+        print(f"{name} Energy: {energy:.2f}")
+        if plot:
+            visualize_isoform(nucleons, bonds, title=name)
+        results.append((name, energy))
+
+    if save_results:
+        os.makedirs("results", exist_ok=True)
+        with open("results/energies.csv", "w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(["Isoform", "Energy"])
+            writer.writerows(results)
+        print("✅ Results saved to results/energies.csv")
+
 
 if __name__ == "__main__":
     run_isoforms()
